@@ -10,9 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
 
-const socket = io("http://localhost:3001");
 
 export default function Page() {
   const { data: session } = useSession();
@@ -25,37 +23,7 @@ export default function Page() {
   const chatId = selectedUser ? [senderId, selectedUser.email].sort().join("_") : "";
 
   // Join room and listen
-  useEffect(() => {
-    if (!chatId) return;
-
-    socket.emit("join_room", chatId);
-
-    const handler = (data: any) => {
-      setMessages((prev) => [...prev, data]);
-    };
-
-    socket.on("receive_message", handler);
-
-    return () => {
-      socket.off("receive_message", handler);
-    };
-  }, [chatId]);
-
-  const handleSend = () => {
-    if (!message.trim() || !selectedUser) return;
-
-    const msgData = {
-      chatId,
-      message,
-      senderId,
-      receiverId: selectedUser.email,
-      timestamp: new Date().toISOString(),
-    };
-
-    socket.emit("send_message", msgData);
-    setMessages((prev) => [...prev, msgData]);
-    setMessage("");
-  };
+  
 
   return (
     <SidebarProvider>
@@ -96,7 +64,7 @@ export default function Page() {
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={`Message ${selectedUser.name || selectedUser.email}...`}
                 />
-                <Button onClick={handleSend}>Send</Button>
+                <Button>Send</Button>
               </div>
             </div>
           ) : (

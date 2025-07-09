@@ -39,7 +39,8 @@ io.on("connection", (socket) => {
     const { chatId, message, senderId, receiverId, timestamp } = data;
 
     // ✅ Emit to the specific room
-    io.to(chatId).emit("receive_message", data);
+    socket.to(chatId).emit("receive_message", data);
+
     console.log(`📤 Message sent to room ${chatId}:`, message);
   });
 
